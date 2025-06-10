@@ -38,8 +38,8 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 
   // Query DSL
-  implementation("com.querydsl.querydsl-apt:5.0.0")
-  kapt("com.querydsl.querydsl-jpa:5.0.0")
+  implementation("com.querydsl:querydsl-jpa:5.0.0")
+  kapt("com.querydsl:querydsl-apt:5.0.0")
 
   // DB Drivers
   runtimeOnly("com.h2database:h2")
