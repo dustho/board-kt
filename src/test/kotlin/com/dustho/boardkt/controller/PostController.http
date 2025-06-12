@@ -5,8 +5,7 @@ Content-Type: application/json
 {
   "title": "title",
   "content": "content",
-  "createdBy": "createdBy",
-  "createdAt": "2025-06-10T23:02:00"
+  "createdBy": "createdBy"
 }
 
 ### 게시글 수정
@@ -16,8 +15,7 @@ Content-Type: application/json
 {
   "title": "title",
   "content": "content",
-  "updatedBy": "updatedBy",
-  "updatedAt": "2025-06-10T23:02:00"
+  "updatedBy": "updatedBy"
 }
 
 ### 게시글 삭제

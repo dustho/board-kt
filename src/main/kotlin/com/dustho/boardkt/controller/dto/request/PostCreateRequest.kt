@@ -1,10 +1,15 @@
 package com.dustho.boardkt.controller.dto.request
 
-import java.time.LocalDateTime
+import com.dustho.boardkt.service.dto.PostCreateRequestDto
 
 data class PostCreateRequest(
   val title: String,
   val content: String,
   val createdBy: String,
-  val createdAt: LocalDateTime,
+)
+
+fun PostCreateRequest.toDto() = PostCreateRequestDto(
+  title = this.title,
+  content = this.content,
+  createdBy = this.createdBy
 )
