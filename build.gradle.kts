@@ -38,8 +38,8 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8")
 
   // Query DSL
-  implementation("com.querydsl:querydsl-jpa:5.0.0")
-  kapt("com.querydsl:querydsl-apt:5.0.0")
+  implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+  kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
 
   // DB Drivers
   runtimeOnly("com.h2database:h2")
@@ -71,4 +71,12 @@ allOpen {
 
 tasks.withType<Test>().configureEach {
   useJUnitPlatform()
+}
+
+ktlint {
+  version.set("1.6.0")
+}
+
+tasks.named("build") {
+  dependsOn("ktlintFormat")
 }

@@ -1,4 +1,4 @@
-package com.dustho.boardkt.service.dto
+package com.dustho.boardkt.service.dto.request
 
 data class PostUpdateRequestDto(
   val title: String,

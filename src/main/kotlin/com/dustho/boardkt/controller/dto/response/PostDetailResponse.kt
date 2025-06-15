@@ -7,7 +7,7 @@ data class PostDetailResponse(
   val title: String,
   val content: String,
   val createdBy: String,
-  val updatedBy: String,
+  val updatedBy: String?,
   val createdAt: LocalDateTime,
-  val updatedAt: LocalDateTime,
+  val updatedAt: LocalDateTime?,
 )

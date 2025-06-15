@@ -1,8 +1,7 @@
 package com.dustho.boardkt.domain
 
-import com.dustho.boardkt.exception.PostNotFoundException
 import com.dustho.boardkt.exception.PostNotUpdatableException
-import com.dustho.boardkt.service.dto.PostUpdateRequestDto
+import com.dustho.boardkt.service.dto.request.PostUpdateRequestDto
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -13,7 +12,7 @@ class Post(
   title: String,
   content: String,
   createdBy: String,
-): BaseEntity(createdBy) {
+) : BaseEntity(createdBy) {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = 0

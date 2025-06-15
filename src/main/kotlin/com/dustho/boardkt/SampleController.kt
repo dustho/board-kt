@@ -9,7 +9,5 @@ class SampleController {
   @GetMapping("/sample")
   fun sample(
     @RequestParam name: String,
-  ): String {
-    return "Hello $name!"
-  }
+  ): String = "Hello $name!"
 }
