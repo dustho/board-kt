@@ -1,9 +1,11 @@
 package com.dustho.boardkt.service
 
+import com.dustho.boardkt.domain.Comment
 import com.dustho.boardkt.domain.Post
 import com.dustho.boardkt.exception.PostNotDeletableException
 import com.dustho.boardkt.exception.PostNotFoundException
 import com.dustho.boardkt.exception.PostNotUpdatableException
+import com.dustho.boardkt.repository.CommentRepository
 import com.dustho.boardkt.repository.PostRepository
 import com.dustho.boardkt.service.dto.request.PostCreateRequestDto
 import com.dustho.boardkt.service.dto.request.PostSearchRequestDto
@@ -21,6 +23,7 @@ import org.springframework.data.repository.findByIdOrNull
 class PostServiceTest(
   private val postService: PostService,
   private val postRepository: PostRepository,
+  private val commentRepository: CommentRepository,
 ) : BehaviorSpec({
     given("게시글 생성 시,") {
       When("입력 값이 정상적으로 들어오면") {
@@ -126,9 +129,18 @@ class PostServiceTest(
         }
       }
       When("요청된 id에 해당하는 게시글이 없다면") {
-        val selectedPost = postService.findPost(savedPost.id)
         then("'게시글을 조회할 수 없다.'라는 예외가 발생합니다.") {
           shouldThrow<PostNotFoundException> { postService.findPost(0) }
+        }
+      }
+      When("댓글이 있는 게시글이라면") {
+        commentRepository.save(Comment("댓글 내용1", savedPost, "dustho"))
+        commentRepository.save(Comment("댓글 내용2", savedPost, "dustho2"))
+        val selectedPost = postService.findPost(savedPost.id)
+        then("'게시글을 조회할 수 없다.'라는 예외가 발생합니다.") {
+          selectedPost.comments.size shouldBe 2
+          selectedPost.comments[0].content shouldBe "댓글 내용1"
+          selectedPost.comments[1].content shouldBe "댓글 내용2"
         }
       }
     }
