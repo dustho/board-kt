@@ -4,7 +4,6 @@ import com.dustho.boardkt.exception.CommentNotDeletableException
 import com.dustho.boardkt.exception.CommentNotFoundException
 import com.dustho.boardkt.exception.PostNotFoundException
 import com.dustho.boardkt.repository.CommentRepository
-import com.dustho.boardkt.repository.CustomPostRepository
 import com.dustho.boardkt.repository.PostRepository
 import com.dustho.boardkt.service.dto.request.CommentCreateRequestDto
 import com.dustho.boardkt.service.dto.request.CommentUpdateRequestDto

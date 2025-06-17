@@ -14,6 +14,7 @@ class Post(
   title: String,
   content: String,
   createdBy: String,
+  postTags: List<PostTag> = emptyList(),
 ) : BaseEntity(createdBy) {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +30,25 @@ class Post(
   var comments: MutableList<Comment> = mutableListOf()
     protected set
 
+  @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [(CascadeType.ALL)])
+  var postTags: MutableList<PostTag> = postTags.toMutableList()
+    protected set
+
   fun update(dto: PostUpdateRequestDto) {
     if (dto.title.length < 2) throw PostNotUpdatableException()
     this.title = dto.title
     this.content = dto.content
     super.updateBaseProps(dto.updatedBy)
+  }
+
+  fun addTags(tags: List<Tag>) {
+    tags.map { tag ->
+      val isNotExist = this.postTags.any { it.tag != tag }
+      if (isNotExist) {
+        val newPostTag = PostTag(post = this, tag = tag)
+        tag.postTags.add(newPostTag)
+        this.postTags.add(newPostTag)
+      }
+    }
   }
 }

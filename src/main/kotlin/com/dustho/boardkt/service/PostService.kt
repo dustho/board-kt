@@ -21,9 +21,15 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class PostService(
   private val postRepository: PostRepository,
+  private val tagService: TagService,
 ) {
   @Transactional
-  fun createPost(requestDto: PostCreateRequestDto): Long = postRepository.save(requestDto.toEntity()).id
+  fun createPost(requestDto: PostCreateRequestDto): Long {
+    val post = requestDto.toEntity()
+    val savedTags = tagService.createNotExistedTags(requestDto.tags, requestDto.createdBy)
+    post.addTags(savedTags)
+    return postRepository.save(post).id
+  }
 
   @Transactional
   fun updatePost(

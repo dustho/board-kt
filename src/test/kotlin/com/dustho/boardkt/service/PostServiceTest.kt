@@ -7,25 +7,35 @@ import com.dustho.boardkt.exception.PostNotFoundException
 import com.dustho.boardkt.exception.PostNotUpdatableException
 import com.dustho.boardkt.repository.CommentRepository
 import com.dustho.boardkt.repository.PostRepository
+import com.dustho.boardkt.repository.PostTagRepository
+import com.dustho.boardkt.repository.TagRepository
 import com.dustho.boardkt.service.dto.request.PostCreateRequestDto
 import com.dustho.boardkt.service.dto.request.PostSearchRequestDto
 import com.dustho.boardkt.service.dto.request.PostUpdateRequestDto
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.matchers.longs.shouldBeGreaterThan
+import io.kotest.extensions.spring.SpringTestExtension
+import io.kotest.extensions.spring.SpringTestLifecycleMode
+import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 @SpringBootTest
 class PostServiceTest(
   private val postService: PostService,
   private val postRepository: PostRepository,
   private val commentRepository: CommentRepository,
+  private val tagRepository: TagRepository,
+  private val postTagRepository: PostTagRepository,
 ) : BehaviorSpec({
-    given("게시글 생성 시,") {
+  extensions(SpringTestExtension(SpringTestLifecycleMode.Test))
+
+  given("게시글 생성 시,") {
       When("입력 값이 정상적으로 들어오면") {
         val postId =
           postService.createPost(
@@ -36,12 +46,39 @@ class PostServiceTest(
             ),
           )
         then("게시글이 정상적으로 생성됩니다.") {
-          postId shouldBeGreaterThan 0L
-          val post = postRepository.findByIdOrNull(postId)
-          post shouldNotBe null
-          post?.title shouldBe "제목"
-          post?.content shouldBe "내용"
-          post?.createdBy shouldBe "harris"
+          val post = postRepository.findByIdOrNull(postId)!!
+          post.title shouldBe "제목"
+          post.content shouldBe "내용"
+          post.createdBy shouldBe "harris"
+        }
+      }
+      When("태그가 함께 들어오면") {
+        val postId =
+          postService.createPost(
+            PostCreateRequestDto(
+              title = "제목",
+              content = "내용",
+              createdBy = "harris",
+              tags = listOf("태그1", "태그2")
+            ),
+          )
+        then("게시글, 태그가 함께 정상적으로 생성됩니다.") {
+            val post = postRepository.findByIdOrNull(postId)!!
+            post.title shouldBe "제목"
+            post.content shouldBe "내용"
+            post.createdBy shouldBe "harris"
+
+            val tag1 = tagRepository.findByIdOrNull(post.postTags[0].tag.id)!!
+            val tag2 = tagRepository.findByIdOrNull(post.postTags[1].tag.id)!!
+            tag1.name shouldBe "태그1"
+            tag2.name shouldBe "태그2"
+
+            val postTag1 = postTagRepository.findByIdOrNull(post.postTags[0].id)!!
+            val postTag2 = postTagRepository.findByIdOrNull(post.postTags[1].id)!!
+            postTag1.post shouldBeEqual post
+            postTag1.tag shouldBeEqual tag1
+            postTag2.post shouldBeEqual post
+            postTag2.tag shouldBeEqual tag2
         }
       }
     }

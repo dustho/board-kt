@@ -5,6 +5,7 @@ import com.dustho.boardkt.service.dto.request.PostSearchRequestDto
 data class PostSearchRequest(
   val title: String?,
   val content: String?,
+  val tags: List<String>?,
 )
 
 fun PostSearchRequest.toDto() =

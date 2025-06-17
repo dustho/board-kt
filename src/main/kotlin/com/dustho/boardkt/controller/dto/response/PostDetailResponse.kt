@@ -12,4 +12,5 @@ data class PostDetailResponse(
   val createdAt: LocalDateTime,
   val updatedAt: LocalDateTime?,
   val comments: List<CommentResponse> = emptyList(),
+  val tags: List<String> = emptyList(),
 )
