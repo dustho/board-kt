@@ -195,7 +195,11 @@ class PostServiceTest(
     }
 
     given("게시글 조회 시,") {
-      val savedPost = postRepository.save(Post(title = "제목", content = "내용", createdBy = "harris"))
+      val savedTag = tagRepository.save(Tag(name = "태그1", createdBy = "harris"))
+      val post = Post(title = "제목", content = "내용", createdBy = "harris")
+      post.updateTags(listOf(savedTag))
+      val savedPost = postRepository.save(post)
+
       When("입력 값이 정상적으로 들어오면") {
         val selectedPost = postService.findPost(savedPost.id)
         then("게시글이 정상적으로 조회됩니다.") {
@@ -206,6 +210,13 @@ class PostServiceTest(
           selectedPost.createdAt shouldBe savedPost.createdAt
           selectedPost.updatedBy shouldBe savedPost.updatedBy
           selectedPost.updatedAt shouldBe savedPost.updatedAt
+        }
+      }
+      When("태그가 함께 저장돼 있으면") {
+        val selectedPost = postService.findPost(savedPost.id)
+        then("게시글, 태그가 함께 정상적으로 조회됩니다.") {
+          selectedPost.tags.size shouldBe 1
+          selectedPost.tags[0] shouldBe "태그1"
         }
       }
       When("요청된 id에 해당하는 게시글이 없다면") {
@@ -226,26 +237,35 @@ class PostServiceTest(
     }
 
     given("게시글 목록 조회 시,") {
-      postRepository.saveAll(
-        listOf(
-          Post(title = "제목1", content = "내용", createdBy = "harris"),
-          Post(title = "제목2", content = "내용", createdBy = "harris"),
-          Post(title = "제목3", content = "내용", createdBy = "harris"),
-          Post(title = "제목4", content = "내용", createdBy = "harris"),
-          Post(title = "제목5", content = "내용", createdBy = "harris"),
-          Post(title = "제목6", content = "내용", createdBy = "harris"),
-          Post(title = "제목7", content = "내용", createdBy = "harris"),
-          Post(title = "제목8", content = "내용", createdBy = "harris"),
-          Post(title = "제목9", content = "내용", createdBy = "harris"),
-          Post(title = "제목10", content = "내용", createdBy = "harris"),
-        ),
-      )
+      val savedTags =
+        tagRepository.saveAll(
+          listOf(
+            Tag("태그1", createdBy = "harris"),
+            Tag("태그2", createdBy = "harris"),
+            Tag("태그3", createdBy = "harris"),
+            Tag("태그4", createdBy = "harris"),
+            Tag("태그5", createdBy = "harris"),
+          ),
+        )
+      val posts = mutableSetOf<Post>()
+      for (i in 1..10) {
+        val post = Post(title = "제목$i", content = "내용", createdBy = "harris")
+        post.updateTags(listOf(savedTags[(i - 1) / 2]))
+        posts.add(post)
+      }
+      postRepository.saveAll(posts.toList())
       When("입력 값이 정상적으로 들어오면") {
         val selectedPostPage = postService.findPostPageBy(PageRequest.of(0, 5), PostSearchRequestDto())
         then("게시글이 정상적으로 조회됩니다.") {
           selectedPostPage.number shouldBe 0
           selectedPostPage.size shouldBe 5
           selectedPostPage.content.size shouldBe 5
+        }
+      }
+      When("태그가 함께 조회되면") {
+        val selectedPostPage = postService.findPostPageBy(PageRequest.of(0, 5), PostSearchRequestDto())
+        then("게시글이 정상적으로 조회됩니다.") {
+          selectedPostPage.content[0].firstTag shouldBe "태그5"
         }
       }
       When("일치하는 제목이 있으면") {
