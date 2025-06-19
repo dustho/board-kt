@@ -27,7 +27,7 @@ class PostService(
   fun createPost(requestDto: PostCreateRequestDto): Long {
     val post = requestDto.toEntity()
     val savedTags = tagService.createNotExistedTags(requestDto.tags, requestDto.createdBy)
-    post.addTags(savedTags)
+    post.updateTags(savedTags)
     return postRepository.save(post).id
   }
 
@@ -37,7 +37,9 @@ class PostService(
     postUpdateRequestDto: PostUpdateRequestDto,
   ): Long {
     val savedPost = postRepository.findByIdOrNull(savedPostId) ?: throw PostNotFoundException()
-    savedPost.update(postUpdateRequestDto)
+    val savedTags = tagService.createNotExistedTags(postUpdateRequestDto.tags, postUpdateRequestDto.updatedBy)
+    savedPost.update(postUpdateRequestDto, savedTags)
+    postRepository.save(savedPost)
     return savedPost.id
   }
 

@@ -1,6 +1,5 @@
 package com.dustho.boardkt.controller.dto.request
 
-import com.dustho.boardkt.service.dto.request.CommentCreateRequestDto
 import com.dustho.boardkt.service.dto.request.CommentUpdateRequestDto
 
 data class CommentUpdateRequest(
@@ -8,7 +7,8 @@ data class CommentUpdateRequest(
   val updatedBy: String,
 )
 
-fun CommentUpdateRequest.toDto() = CommentUpdateRequestDto(
-  content = content,
-  updatedBy = updatedBy
-)
+fun CommentUpdateRequest.toDto() =
+  CommentUpdateRequestDto(
+    content = content,
+    updatedBy = updatedBy,
+  )

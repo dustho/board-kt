@@ -7,7 +7,8 @@ data class CommentCreateRequest(
   val createdBy: String,
 )
 
-fun CommentCreateRequest.toDto() = CommentCreateRequestDto(
-  content = content,
-  createdBy = createdBy
-)
+fun CommentCreateRequest.toDto() =
+  CommentCreateRequestDto(
+    content = content,
+    createdBy = createdBy,
+  )

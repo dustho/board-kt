@@ -2,6 +2,7 @@ package com.dustho.boardkt.service
 
 import com.dustho.boardkt.domain.Comment
 import com.dustho.boardkt.domain.Post
+import com.dustho.boardkt.domain.Tag
 import com.dustho.boardkt.exception.PostNotDeletableException
 import com.dustho.boardkt.exception.PostNotFoundException
 import com.dustho.boardkt.exception.PostNotUpdatableException
@@ -33,9 +34,9 @@ class PostServiceTest(
   private val tagRepository: TagRepository,
   private val postTagRepository: PostTagRepository,
 ) : BehaviorSpec({
-  extensions(SpringTestExtension(SpringTestLifecycleMode.Test))
+    extensions(SpringTestExtension(SpringTestLifecycleMode.Test))
 
-  given("게시글 생성 시,") {
+    given("게시글 생성 시,") {
       When("입력 값이 정상적으로 들어오면") {
         val postId =
           postService.createPost(
@@ -59,32 +60,44 @@ class PostServiceTest(
               title = "제목",
               content = "내용",
               createdBy = "harris",
-              tags = listOf("태그1", "태그2")
+              tags = listOf("태그1", "태그2"),
             ),
           )
         then("게시글, 태그가 함께 정상적으로 생성됩니다.") {
-            val post = postRepository.findByIdOrNull(postId)!!
-            post.title shouldBe "제목"
-            post.content shouldBe "내용"
-            post.createdBy shouldBe "harris"
+          val post = postRepository.findByIdOrNull(postId)!!
+          post.title shouldBe "제목"
+          post.content shouldBe "내용"
+          post.createdBy shouldBe "harris"
 
-            val tag1 = tagRepository.findByIdOrNull(post.postTags[0].tag.id)!!
-            val tag2 = tagRepository.findByIdOrNull(post.postTags[1].tag.id)!!
-            tag1.name shouldBe "태그1"
-            tag2.name shouldBe "태그2"
+          val postTags = postTagRepository.findAll()
+          val tags = tagRepository.findAll()
+          println(postTags.size)
+          println(tags.size)
 
-            val postTag1 = postTagRepository.findByIdOrNull(post.postTags[0].id)!!
-            val postTag2 = postTagRepository.findByIdOrNull(post.postTags[1].id)!!
-            postTag1.post shouldBeEqual post
-            postTag1.tag shouldBeEqual tag1
-            postTag2.post shouldBeEqual post
-            postTag2.tag shouldBeEqual tag2
+          val tag1 = tagRepository.findByIdOrNull(post.postTags[0].tag.id)!!
+          val tag2 = tagRepository.findByIdOrNull(post.postTags[1].tag.id)!!
+          tag1.name shouldBe "태그1"
+          tag2.name shouldBe "태그2"
+
+          val postTag1 = postTagRepository.findByIdOrNull(post.postTags[0].id)!!
+          val postTag2 = postTagRepository.findByIdOrNull(post.postTags[1].id)!!
+          postTag1.post shouldBeEqual post
+          postTag1.tag shouldBeEqual tag1
+          postTag2.post shouldBeEqual post
+          postTag2.tag shouldBeEqual tag2
         }
       }
     }
 
     given("게시글 수정 시,") {
-      val savedPost = postRepository.save(Post(title = "제목", content = "내용", createdBy = "harris"))
+      val tag1 = Tag(name = "태그1", createdBy = "harris")
+      val tag2 = Tag(name = "태그2", createdBy = "태그")
+      val savedTag1 = tagRepository.save(tag1)
+      val savedTag2 = tagRepository.save(tag2)
+      val post = Post(title = "제목", content = "내용", createdBy = "harris")
+      post.updateTags(listOf(savedTag1, savedTag2))
+      val savedPost = postRepository.save(post)
+
       When("입력 값이 정상적으로 들어오면") {
         val postId =
           postService.updatePost(
@@ -102,6 +115,36 @@ class PostServiceTest(
           post?.title shouldBe "제목"
           post?.content shouldBe "수정된 내용"
           post?.updatedBy shouldBe "tom"
+        }
+      }
+      When("태그가 함께 들어오면") {
+        val postId =
+          postService.updatePost(
+            savedPost.id,
+            PostUpdateRequestDto(
+              title = "제목",
+              content = "내용",
+              updatedBy = "harris",
+              tags = listOf("태그2", "태그3"),
+            ),
+          )
+        then("게시글, 태그가 함께 정상적으로 생성됩니다.") {
+          val post = postRepository.findByIdOrNull(postId)!!
+          post.title shouldBe "제목"
+          post.content shouldBe "내용"
+          post.createdBy shouldBe "harris"
+
+          val tag1 = tagRepository.findByIdOrNull(post.postTags[0].tag.id)!!
+          val tag2 = tagRepository.findByIdOrNull(post.postTags[1].tag.id)!!
+          tag1.name shouldBe "태그1"
+          tag2.name shouldBe "태그2"
+
+          val postTag1 = postTagRepository.findByIdOrNull(post.postTags[0].id)!!
+          val postTag2 = postTagRepository.findByIdOrNull(post.postTags[1].id)!!
+          postTag1.post shouldBeEqual post
+          postTag1.tag shouldBeEqual tag1
+          postTag2.post shouldBeEqual post
+          postTag2.tag shouldBeEqual tag2
         }
       }
       When("동일한 게시글을 찾을 수 없으면") {

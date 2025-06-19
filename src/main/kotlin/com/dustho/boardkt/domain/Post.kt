@@ -34,16 +34,20 @@ class Post(
   var postTags: MutableList<PostTag> = postTags.toMutableList()
     protected set
 
-  fun update(dto: PostUpdateRequestDto) {
+  fun update(
+    dto: PostUpdateRequestDto,
+    tags: List<Tag>,
+  ) {
     if (dto.title.length < 2) throw PostNotUpdatableException()
     this.title = dto.title
     this.content = dto.content
     super.updateBaseProps(dto.updatedBy)
+    updateTags(tags)
   }
 
-  fun addTags(tags: List<Tag>) {
-    tags.map { tag ->
-      val isNotExist = this.postTags.any { it.tag != tag }
+  fun updateTags(tags: List<Tag>) {
+    tags.forEach { tag ->
+      val isNotExist = this.postTags.none { it.tag == tag }
       if (isNotExist) {
         val newPostTag = PostTag(post = this, tag = tag)
         tag.postTags.add(newPostTag)

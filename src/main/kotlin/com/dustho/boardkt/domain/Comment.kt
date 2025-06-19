@@ -1,6 +1,5 @@
 package com.dustho.boardkt.domain
 
-import com.dustho.boardkt.exception.CommentNotFoundException
 import com.dustho.boardkt.exception.CommentNotUpdatableException
 import com.dustho.boardkt.service.dto.request.CommentUpdateRequestDto
 import jakarta.persistence.Entity
@@ -34,5 +33,4 @@ class Comment(
     content = commentUpdateRequestDto.content
     super.updateBaseProps(commentUpdateRequestDto.updatedBy)
   }
-
 }

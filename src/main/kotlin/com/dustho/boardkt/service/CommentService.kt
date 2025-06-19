@@ -19,21 +19,30 @@ class CommentService(
   val postRepository: PostRepository,
 ) {
   @Transactional
-  fun createComment(postId: Long, commentCreateRequestDto: CommentCreateRequestDto): Long {
+  fun createComment(
+    postId: Long,
+    commentCreateRequestDto: CommentCreateRequestDto,
+  ): Long {
     val savedPost = postRepository.findByIdOrNull(postId) ?: throw PostNotFoundException()
     val savedComment = commentRepository.save(commentCreateRequestDto.toEntity(savedPost))
     return savedComment.id
   }
 
   @Transactional
-  fun updateComment(commentId: Long, commentUpdateRequestDto: CommentUpdateRequestDto): Long {
+  fun updateComment(
+    commentId: Long,
+    commentUpdateRequestDto: CommentUpdateRequestDto,
+  ): Long {
     val savedComment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException()
     savedComment.update(commentUpdateRequestDto)
     return savedComment.id
   }
 
   @Transactional
-  fun deleteComment(commentId: Long, deletedBy: String) {
+  fun deleteComment(
+    commentId: Long,
+    deletedBy: String,
+  ) {
     val savedComment = commentRepository.findByIdOrNull(commentId) ?: throw CommentNotFoundException()
     if (savedComment.createdBy != deletedBy) {
       throw CommentNotDeletableException()

@@ -12,7 +12,7 @@ data class PostDetailResponseDto(
   val updatedBy: String?,
   val createdAt: LocalDateTime,
   val updatedAt: LocalDateTime?,
-  val comments: List<CommentResponseDto>
+  val comments: List<CommentResponseDto>,
 )
 
 fun Post.toPostDetailResponseDto(): PostDetailResponseDto =
@@ -24,7 +24,7 @@ fun Post.toPostDetailResponseDto(): PostDetailResponseDto =
     createdAt = this.createdAt,
     updatedBy = this.updatedBy,
     updatedAt = this.updatedAt,
-    comments = comments.map { it.toResponseDto() }
+    comments = comments.map { it.toResponseDto() },
   )
 
 fun PostDetailResponseDto.toResponse() =
@@ -36,5 +36,5 @@ fun PostDetailResponseDto.toResponse() =
     createdAt = this.createdAt,
     updatedBy = this.updatedBy,
     updatedAt = this.updatedAt,
-    comments = this.comments.map { it.toResponse() }
+    comments = this.comments.map { it.toResponse() },
   )
